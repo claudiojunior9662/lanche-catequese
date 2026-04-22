@@ -3,6 +3,17 @@ import { getDb } from '@/lib/db'
 
 export async function DELETE(request, context) {
   const { id } = await context.params
+
+  const senha = request.headers.get('x-delete-password')
+  const senhaCorreta = process.env.DELETE_PASSWORD
+
+  if (!senhaCorreta) {
+    return NextResponse.json({ error: 'Senha de exclusão não configurada no servidor' }, { status: 500 })
+  }
+  if (senha !== senhaCorreta) {
+    return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 })
+  }
+
   const db = getDb()
 
   try {

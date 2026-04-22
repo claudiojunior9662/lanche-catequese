@@ -64,9 +64,19 @@ export default function Home() {
 
   const removerGrupo = async (id: number) => {
     if (loadingRemoverGrupo !== null) return;
-    if (!confirm('Remover este grupo e todos os seus integrantes?')) return;
+    const senha = window.prompt('Digite a senha para remover o grupo:');
+    if (senha === null) return; // cancelou
     setLoadingRemoverGrupo(id);
-    await fetch(`/api/grupos/${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/grupos/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-delete-password': senha },
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error ?? 'Erro ao remover grupo');
+      setLoadingRemoverGrupo(null);
+      return;
+    }
     await fetchGrupos();
     setLoadingRemoverGrupo(null);
   };
