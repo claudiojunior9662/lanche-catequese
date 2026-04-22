@@ -27,6 +27,10 @@ interface FormState {
 export default function Home() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [forms, setForms] = useState<Record<number, FormState>>({});
+  const [loadingAdicionarGrupo, setLoadingAdicionarGrupo] = useState(false);
+  const [loadingRemoverGrupo, setLoadingRemoverGrupo] = useState<number | null>(null);
+  const [loadingAdicionarIntegrante, setLoadingAdicionarIntegrante] = useState<number | null>(null);
+  const [loadingRemoverIntegrante, setLoadingRemoverIntegrante] = useState<number | null>(null);
   const proximaQuarta = getProximaQuarta();
   const grupoAtualNumero = getNumeroGrupoAtual(grupos.length);
 
@@ -51,32 +55,44 @@ export default function Home() {
     setForms(prev => ({ ...prev, [grupoId]: { ...getForm(grupoId), ...partial } }));
 
   const adicionarGrupo = async () => {
+    if (loadingAdicionarGrupo) return;
+    setLoadingAdicionarGrupo(true);
     await fetch('/api/grupos', { method: 'POST' });
-    fetchGrupos();
+    await fetchGrupos();
+    setLoadingAdicionarGrupo(false);
   };
 
   const removerGrupo = async (id: number) => {
+    if (loadingRemoverGrupo !== null) return;
     if (!confirm('Remover este grupo e todos os seus integrantes?')) return;
+    setLoadingRemoverGrupo(id);
     await fetch(`/api/grupos/${id}`, { method: 'DELETE' });
-    fetchGrupos();
+    await fetchGrupos();
+    setLoadingRemoverGrupo(null);
   };
 
   const adicionarIntegrante = async (grupoId: number) => {
+    if (loadingAdicionarIntegrante !== null) return;
     const form = getForm(grupoId);
     if (!form.nome || !form.telefone || !form.alimento) return;
-
+    setLoadingAdicionarIntegrante(grupoId);
     await fetch(`/api/grupos/${grupoId}/integrantes`, {
       method: 'POST',
       body: JSON.stringify(form),
       headers: { 'Content-Type': 'application/json' },
     });
     setForms(prev => ({ ...prev, [grupoId]: { nome: '', telefone: '', alimento: '', categoria: 'salgado' } }));
-    fetchGrupos();
+    await fetchGrupos();
+    setLoadingAdicionarIntegrante(null);
   };
 
   const removerIntegrante = async (id: number) => {
+    if (loadingRemoverIntegrante !== null) return;
+    if (!confirm('Remover este integrante deste grupo?')) return;
+    setLoadingRemoverIntegrante(id);
     await fetch(`/api/integrantes/${id}`, { method: 'DELETE' });
-    fetchGrupos();
+    await fetchGrupos();
+    setLoadingRemoverIntegrante(null);
   };
 
   return (
@@ -116,10 +132,11 @@ export default function Home() {
                 </div>
                 <button
                   onClick={() => removerGrupo(grupo.id)}
-                  className="text-xs text-stone-300 hover:text-red-500 transition-colors"
+                  disabled={loadingRemoverGrupo !== null}
+                  className="text-xs text-stone-300 hover:text-red-500 transition-colors disabled:opacity-50"
                   title="Remover grupo"
                 >
-                  ···
+                  {loadingRemoverGrupo === grupo.id ? '…' : '···'}
                 </button>
               </div>
 
@@ -148,10 +165,11 @@ export default function Home() {
                               </span>
                               <button
                                 onClick={() => removerIntegrante(i.id)}
-                                className="shrink-0 text-red-400 hover:text-red-600 text-base leading-none mt-0.5"
+                                disabled={loadingRemoverIntegrante !== null}
+                                className="shrink-0 text-red-400 hover:text-red-600 text-base leading-none mt-0.5 disabled:opacity-40"
                                 title="Remover"
                               >
-                                ✕
+                                {loadingRemoverIntegrante === i.id ? '…' : '✕'}
                               </button>
                             </li>
                           ))}
@@ -196,9 +214,10 @@ export default function Home() {
                   />
                   <button
                     onClick={() => adicionarIntegrante(grupo.id)}
-                    className="bg-amber-800 text-amber-50 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-amber-900 active:scale-95 transition shrink-0"
+                    disabled={loadingAdicionarIntegrante !== null}
+                    className="bg-amber-800 text-amber-50 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-amber-900 active:scale-95 transition shrink-0 disabled:opacity-60"
                   >
-                    + Add
+                    {loadingAdicionarIntegrante === grupo.id ? '…' : '+ Add'}
                   </button>
                 </div>
               </div>
@@ -209,9 +228,10 @@ export default function Home() {
 
       <button
         onClick={adicionarGrupo}
-        className="mt-6 w-full border-2 border-dashed border-amber-400 rounded-2xl p-4 text-amber-700 font-semibold hover:bg-amber-100 active:scale-95 transition"
+        disabled={loadingAdicionarGrupo}
+        className="mt-6 w-full border-2 border-dashed border-amber-400 rounded-2xl p-4 text-amber-700 font-semibold hover:bg-amber-100 active:scale-95 transition disabled:opacity-60"
       >
-        + Adicionar novo grupo
+        {loadingAdicionarGrupo ? 'Adicionando…' : '+ Adicionar novo grupo'}
       </button>
     </main>
   );
