@@ -67,18 +67,26 @@ export default function Home() {
     const senha = window.prompt('Digite a senha para remover o grupo:');
     if (senha === null) return; // cancelou
     setLoadingRemoverGrupo(id);
-    const res = await fetch(`/api/grupos/${id}`, {
-      method: 'DELETE',
-      headers: { 'x-delete-password': senha },
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      alert(data.error ?? 'Erro ao remover grupo');
+    try {
+      const res = await fetch(`/api/grupos/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-delete-password': senha },
+      });
+      if (!res.ok) {
+        let errorMessage = 'Erro ao remover grupo';
+        try {
+          const data = await res.json();
+          errorMessage = data.error ?? errorMessage;
+        } catch {
+          // mantém a mensagem padrão se o corpo não for JSON válido
+        }
+        alert(errorMessage);
+        return;
+      }
+      await fetchGrupos();
+    } finally {
       setLoadingRemoverGrupo(null);
-      return;
     }
-    await fetchGrupos();
-    setLoadingRemoverGrupo(null);
   };
 
   const adicionarIntegrante = async (grupoId: number) => {
