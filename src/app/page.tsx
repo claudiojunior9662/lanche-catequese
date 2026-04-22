@@ -51,9 +51,9 @@ export default function Home() {
     forms[grupoId] ?? { nome: '', telefone: '', alimento: '', categoria: 'salgado', tipo: 'Catequisando' };
 
   const CATEGORIAS = [
-    { key: 'bebida',  label: 'Bebidas',  badge: 'bg-sky-100 text-sky-900',    dot: 'bg-sky-600' },
+    { key: 'bebida', label: 'Bebidas', badge: 'bg-sky-100 text-sky-900', dot: 'bg-sky-600' },
     { key: 'salgado', label: 'Salgados', badge: 'bg-amber-100 text-amber-900', dot: 'bg-amber-600' },
-    { key: 'doce',    label: 'Doces',    badge: 'bg-rose-100 text-rose-900',   dot: 'bg-rose-500' },
+    { key: 'doce', label: 'Doces', badge: 'bg-rose-100 text-rose-900', dot: 'bg-rose-500' },
   ];
 
   const setForm = (grupoId: number, partial: Partial<FormState>) =>
@@ -139,7 +139,7 @@ export default function Home() {
   };
 
   return (
-    <main className="max-w-2xl mx-auto px-4 py-6 min-h-screen" style={{ background: 'var(--background)' }}>
+    <main className="w-full max-w-2xl mx-auto px-4 py-6 min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Cabeçalho */}
       <div className="text-center mb-6">
         <div className="text-3xl mb-1">✝️</div>
@@ -161,7 +161,7 @@ export default function Home() {
           return (
             <div
               key={grupo.id}
-              className={`rounded-2xl border-2 p-4 shadow-sm ${isAtual ? 'border-purple-500 bg-purple-50' : 'border-amber-200 bg-white'}`}
+              className={`rounded-2xl border-2 p-4 shadow-sm w-full overflow-hidden ${isAtual ? 'border-purple-500 bg-purple-50' : 'border-amber-200 bg-white'}`}
             >
               {/* Cabeçalho do grupo */}
               <div className="flex justify-between items-center mb-3">
@@ -176,10 +176,10 @@ export default function Home() {
                 <button
                   onClick={() => removerGrupo(grupo.id)}
                   disabled={loadingRemoverGrupo !== null}
-                  className="text-xs text-stone-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                  className="text-xs text-stone-300 hover:text-red-500 transition-colors"
                   title="Remover grupo"
                 >
-                  {loadingRemoverGrupo === grupo.id ? '…' : '···'}
+                  {loadingRemoverGrupo === grupo.id ? '…' : 'X'}
                 </button>
               </div>
 
@@ -201,24 +201,24 @@ export default function Home() {
                           {lista.map(i => (
                             <li key={i.id} className="py-2 text-sm">
                               {editandoId === i.id ? (
-                                <div className="space-y-1.5">
-                                  <div className="flex gap-1.5">
+                                <div className="space-y-2">
+                                  <div className="flex gap-2">
                                     <input
-                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 min-w-0 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
                                       value={editForm.nome}
                                       onChange={e => setEditFormState(f => ({ ...f, nome: e.target.value }))}
                                       placeholder="Nome"
                                     />
                                     <input
-                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 min-w-0 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
                                       value={editForm.telefone}
                                       onChange={e => setEditFormState(f => ({ ...f, telefone: e.target.value }))}
                                       placeholder="Telefone"
                                     />
                                   </div>
-                                  <div className="flex gap-1.5">
+                                  <div className="grid grid-cols-2 gap-1.5">
                                     <select
-                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      className="w-full border border-amber-300 rounded-lg px-2 py-1.5 text-sm bg-white text-amber-900 focus:outline-none focus:border-amber-500"
                                       value={editForm.categoria}
                                       onChange={e => setEditFormState(f => ({ ...f, categoria: e.target.value }))}
                                     >
@@ -226,20 +226,22 @@ export default function Home() {
                                       <option value="salgado">Salgado</option>
                                       <option value="doce">Doce</option>
                                     </select>
-                                    <input
-                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
-                                      value={editForm.alimento}
-                                      onChange={e => setEditFormState(f => ({ ...f, alimento: e.target.value }))}
-                                      placeholder="O que vai levar?"
-                                    />
                                     <select
-                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      className="w-full border border-amber-300 rounded-lg px-2 py-1.5 text-sm bg-white text-amber-900 focus:outline-none focus:border-amber-500"
                                       value={editForm.tipo}
                                       onChange={e => setEditFormState(f => ({ ...f, tipo: e.target.value }))}
                                     >
                                       <option value="Catequisando">Catequisando</option>
                                       <option value="Ouvinte">Ouvinte</option>
                                     </select>
+                                  </div>
+                                  <div className="flex gap-1.5">
+                                    <input
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 min-w-0 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      value={editForm.alimento}
+                                      onChange={e => setEditFormState(f => ({ ...f, alimento: e.target.value }))}
+                                      placeholder="O que vai levar?"
+                                    />
                                   </div>
                                   <div className="flex gap-1.5 justify-end">
                                     <button
@@ -259,15 +261,17 @@ export default function Home() {
                                 </div>
                               ) : (
                                 <div className="flex justify-between items-start gap-2">
-                                  <span className="flex-1 min-w-0">
-                                    <span className="font-semibold text-amber-900">{i.nome}</span>
-                                    <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                                      i.tipo === 'Ouvinte' ? 'bg-stone-100 text-stone-500' : 'bg-purple-100 text-purple-700'
-                                    }`}>{i.tipo}</span>
-                                    <span className="text-stone-500"> levará </span>
-                                    <span className="text-green-800 font-medium">{i.alimento}</span>
-                                    <span className="block text-stone-400 text-xs mt-0.5">{i.telefone}</span>
-                                  </span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span className="font-semibold text-amber-900">{i.nome}</span>
+                                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${i.tipo === 'Ouvinte' ? 'bg-stone-100 text-stone-500' : 'bg-purple-100 text-purple-700'
+                                        }`}>{i.tipo}</span>
+                                    </div>
+                                    <p className="text-xs text-stone-500 mt-0.5">
+                                      levará <span className="text-green-800 font-medium">{i.alimento}</span>
+                                    </p>
+                                    <p className="text-xs text-stone-400">{i.telefone}</p>
+                                  </div>
                                   <div className="flex gap-2 shrink-0 mt-0.5">
                                     <button
                                       onClick={() => iniciarEdicao(i)}
@@ -296,25 +300,24 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Formulário para adicionar integrante */}
               <div className="mt-3 pt-3 border-t border-amber-100 space-y-2">
                 <div className="flex gap-2">
                   <input
-                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm flex-1 bg-amber-50 text-amber-900 placeholder-amber-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-0 bg-amber-50 text-amber-900 placeholder-amber-400 focus:outline-none focus:border-amber-500 focus:bg-white"
                     placeholder="Nome"
                     value={form.nome}
                     onChange={e => setForm(grupo.id, { nome: e.target.value })}
                   />
                   <input
-                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm flex-1 bg-amber-50 text-amber-900 placeholder-amber-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-0 bg-amber-50 text-amber-900 placeholder-amber-400 focus:outline-none focus:border-amber-500 focus:bg-white"
                     placeholder="Telefone"
                     value={form.telefone}
                     onChange={e => setForm(grupo.id, { telefone: e.target.value })}
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <select
-                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm bg-amber-50 text-amber-900 focus:outline-none focus:border-amber-500"
+                    className="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm bg-amber-50 text-amber-900 focus:outline-none focus:border-amber-500"
                     value={form.categoria}
                     onChange={e => setForm(grupo.id, { categoria: e.target.value })}
                   >
@@ -323,15 +326,17 @@ export default function Home() {
                     <option value="doce">Doce</option>
                   </select>
                   <select
-                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm bg-amber-50 text-amber-900 focus:outline-none focus:border-amber-500"
+                    className="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm bg-amber-50 text-amber-900 focus:outline-none focus:border-amber-500"
                     value={form.tipo}
                     onChange={e => setForm(grupo.id, { tipo: e.target.value })}
                   >
                     <option value="Catequisando">Catequisando</option>
                     <option value="Ouvinte">Ouvinte</option>
                   </select>
+                </div>
+                <div className="flex gap-2">
                   <input
-                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm flex-1 bg-amber-50 text-amber-900 placeholder-amber-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+                    className="border border-amber-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-0 bg-amber-50 text-amber-900 placeholder-amber-400 focus:outline-none focus:border-amber-500 focus:bg-white"
                     placeholder="O que vai levar?"
                     value={form.alimento}
                     onChange={e => setForm(grupo.id, { alimento: e.target.value })}
