@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 :root {
   --background: #fdf8f0;
   --foreground: #3b2a1a;
