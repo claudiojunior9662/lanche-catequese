@@ -7,7 +7,7 @@ export async function GET() {
     SELECT g.id, g.numero,
       json_group_array(
         CASE WHEN i.id IS NOT NULL THEN
-          json_object('id', i.id, 'nome', i.nome, 'telefone', i.telefone, 'alimento', i.alimento, 'categoria', i.categoria)
+          json_object('id', i.id, 'nome', i.nome, 'telefone', i.telefone, 'alimento', i.alimento, 'categoria', i.categoria, 'tipo', i.tipo)
         END
       ) as integrantes
     FROM Grupo g

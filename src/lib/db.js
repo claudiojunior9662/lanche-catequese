@@ -37,15 +37,19 @@ function createDb() {
       telefone  TEXT NOT NULL,
       alimento  TEXT NOT NULL,
       categoria TEXT NOT NULL DEFAULT 'salgado',
+      tipo      TEXT NOT NULL DEFAULT 'Catequisando',
       grupoId   INTEGER NOT NULL,
       FOREIGN KEY (grupoId) REFERENCES Grupo(id) ON DELETE CASCADE
     );
   `)
 
-  // Adiciona coluna categoria se a tabela já existia sem ela
+  // Adiciona colunas ausentes em bancos existentes
   const colsInt = db.prepare("PRAGMA table_info(Integrante)").all()
   if (!colsInt.some(c => c.name === 'categoria')) {
     db.exec(`ALTER TABLE Integrante ADD COLUMN categoria TEXT NOT NULL DEFAULT 'salgado'`)
+  }
+  if (!colsInt.some(c => c.name === 'tipo')) {
+    db.exec(`ALTER TABLE Integrante ADD COLUMN tipo TEXT NOT NULL DEFAULT 'Catequisando'`)
   }
 
   return db
