@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Grupo {
+  id          Int          @id @default(autoincrement())
+  dataQuarta  DateTime     @unique
+  integrantes Integrante[]
+}
+
+model Integrante {
+  id       Int    @id @default(autoincrement())
+  nome     String
+  telefone String
+  alimento String
+  grupoId  Int
+  grupo    Grupo  @relation(fields: [grupoId], references: [id])
+}

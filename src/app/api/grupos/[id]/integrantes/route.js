@@ -1,0 +1,22 @@
+import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+
+export async function POST(request, context) {
+  const { id } = await context.params
+  const { nome, telefone, alimento, categoria = 'salgado' } = await request.json()
+
+  try {
+    const grupo = db.prepare('SELECT * FROM Grupo WHERE id = ?').get(id)
+    if (!grupo) return NextResponse.json({ error: 'Grupo não encontrado' }, { status: 404 })
+
+    const result = db.prepare(
+      'INSERT INTO Integrante (nome, telefone, alimento, categoria, grupoId) VALUES (?, ?, ?, ?, ?)'
+    ).run(nome, telefone, alimento, categoria, id)
+
+    const integrante = db.prepare('SELECT * FROM Integrante WHERE id = ?').get(result.lastInsertRowid)
+    return NextResponse.json(integrante, { status: 201 })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: 'Erro ao adicionar integrante' }, { status: 500 })
+  }
+}
