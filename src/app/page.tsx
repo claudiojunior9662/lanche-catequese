@@ -31,6 +31,9 @@ export default function Home() {
   const [loadingRemoverGrupo, setLoadingRemoverGrupo] = useState<number | null>(null);
   const [loadingAdicionarIntegrante, setLoadingAdicionarIntegrante] = useState<number | null>(null);
   const [loadingRemoverIntegrante, setLoadingRemoverIntegrante] = useState<number | null>(null);
+  const [editandoId, setEditandoId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<Omit<FormState, never>>({ nome: '', telefone: '', alimento: '', categoria: 'salgado' });
+  const [loadingSalvarEdicao, setLoadingSalvarEdicao] = useState(false);
   const proximaQuarta = getProximaQuarta();
   const grupoAtualNumero = getNumeroGrupoAtual(grupos.length);
 
@@ -95,6 +98,26 @@ export default function Home() {
     setLoadingRemoverIntegrante(null);
   };
 
+  const iniciarEdicao = (i: Integrante) => {
+    setEditandoId(i.id);
+    setEditForm({ nome: i.nome, telefone: i.telefone, alimento: i.alimento, categoria: i.categoria });
+  };
+
+  const cancelarEdicao = () => setEditandoId(null);
+
+  const salvarEdicao = async (id: number) => {
+    if (loadingSalvarEdicao) return;
+    setLoadingSalvarEdicao(true);
+    await fetch(`/api/integrantes/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(editForm),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    setEditandoId(null);
+    await fetchGrupos();
+    setLoadingSalvarEdicao(false);
+  };
+
   return (
     <main className="max-w-2xl mx-auto px-4 py-6 min-h-screen" style={{ background: 'var(--background)' }}>
       {/* Cabeçalho */}
@@ -156,21 +179,83 @@ export default function Home() {
                         </span>
                         <ul className="divide-y divide-amber-100">
                           {lista.map(i => (
-                            <li key={i.id} className="flex justify-between items-start py-2 text-sm gap-2">
-                              <span className="flex-1 min-w-0">
-                                <span className="font-semibold text-amber-900">{i.nome}</span>
-                                <span className="text-stone-500"> levará </span>
-                                <span className="text-green-800 font-medium">{i.alimento}</span>
-                                <span className="block text-stone-400 text-xs mt-0.5">{i.telefone}</span>
-                              </span>
-                              <button
-                                onClick={() => removerIntegrante(i.id)}
-                                disabled={loadingRemoverIntegrante !== null}
-                                className="shrink-0 text-red-400 hover:text-red-600 text-base leading-none mt-0.5 disabled:opacity-40"
-                                title="Remover"
-                              >
-                                {loadingRemoverIntegrante === i.id ? '…' : '✕'}
-                              </button>
+                            <li key={i.id} className="py-2 text-sm">
+                              {editandoId === i.id ? (
+                                <div className="space-y-1.5">
+                                  <div className="flex gap-1.5">
+                                    <input
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      value={editForm.nome}
+                                      onChange={e => setEditForm(f => ({ ...f, nome: e.target.value }))}
+                                      placeholder="Nome"
+                                    />
+                                    <input
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      value={editForm.telefone}
+                                      onChange={e => setEditForm(f => ({ ...f, telefone: e.target.value }))}
+                                      placeholder="Telefone"
+                                    />
+                                  </div>
+                                  <div className="flex gap-1.5">
+                                    <select
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      value={editForm.categoria}
+                                      onChange={e => setEditForm(f => ({ ...f, categoria: e.target.value }))}
+                                    >
+                                      <option value="bebida">Bebida</option>
+                                      <option value="salgado">Salgado</option>
+                                      <option value="doce">Doce</option>
+                                    </select>
+                                    <input
+                                      className="border border-amber-300 rounded-lg px-2 py-1.5 text-sm flex-1 bg-white text-amber-900 focus:outline-none focus:border-amber-500"
+                                      value={editForm.alimento}
+                                      onChange={e => setEditForm(f => ({ ...f, alimento: e.target.value }))}
+                                      placeholder="O que vai levar?"
+                                    />
+                                  </div>
+                                  <div className="flex gap-1.5 justify-end">
+                                    <button
+                                      onClick={cancelarEdicao}
+                                      className="px-3 py-1.5 rounded-lg text-xs text-stone-500 hover:bg-stone-100 transition"
+                                    >
+                                      Cancelar
+                                    </button>
+                                    <button
+                                      onClick={() => salvarEdicao(i.id)}
+                                      disabled={loadingSalvarEdicao}
+                                      className="px-3 py-1.5 rounded-lg text-xs bg-amber-700 text-white font-semibold hover:bg-amber-800 transition disabled:opacity-60"
+                                    >
+                                      {loadingSalvarEdicao ? '…' : 'Salvar'}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex justify-between items-start gap-2">
+                                  <span className="flex-1 min-w-0">
+                                    <span className="font-semibold text-amber-900">{i.nome}</span>
+                                    <span className="text-stone-500"> levará </span>
+                                    <span className="text-green-800 font-medium">{i.alimento}</span>
+                                    <span className="block text-stone-400 text-xs mt-0.5">{i.telefone}</span>
+                                  </span>
+                                  <div className="flex gap-2 shrink-0 mt-0.5">
+                                    <button
+                                      onClick={() => iniciarEdicao(i)}
+                                      className="text-amber-400 hover:text-amber-700 text-xs"
+                                      title="Editar"
+                                    >
+                                      ✏️
+                                    </button>
+                                    <button
+                                      onClick={() => removerIntegrante(i.id)}
+                                      disabled={loadingRemoverIntegrante !== null}
+                                      className="text-red-400 hover:text-red-600 text-base leading-none disabled:opacity-40"
+                                      title="Remover"
+                                    >
+                                      {loadingRemoverIntegrante === i.id ? '…' : '✕'}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
                             </li>
                           ))}
                         </ul>
