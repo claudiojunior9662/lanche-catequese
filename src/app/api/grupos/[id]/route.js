@@ -11,7 +11,7 @@ export async function DELETE(request, context) {
     return NextResponse.json({ error: 'Senha de exclusão não configurada no servidor' }, { status: 500 })
   }
   if (senha !== senhaCorreta) {
-    return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 })
+    return NextResponse.json({ error: 'Senha incorreta' }, { status: 403 })
   }
 
   const db = getDb()
