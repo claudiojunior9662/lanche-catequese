@@ -3,7 +3,7 @@ import { getDb } from '@/lib/db'
 
 export async function POST(request, context) {
   const { id } = await context.params
-  const { nome, telefone, alimento, categoria = 'salgado' } = await request.json()
+  const { nome, telefone, alimento, categoria = 'salgado', tipo = 'Catequisando' } = await request.json()
 
   try {
     const db = getDb()
@@ -11,8 +11,8 @@ export async function POST(request, context) {
     if (!grupo) return NextResponse.json({ error: 'Grupo não encontrado' }, { status: 404 })
 
     const result = db.prepare(
-      'INSERT INTO Integrante (nome, telefone, alimento, categoria, grupoId) VALUES (?, ?, ?, ?, ?)'
-    ).run(nome, telefone, alimento, categoria, id)
+      'INSERT INTO Integrante (nome, telefone, alimento, categoria, tipo, grupoId) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(nome, telefone, alimento, categoria, tipo, id)
 
     const integrante = db.prepare('SELECT * FROM Integrante WHERE id = ?').get(result.lastInsertRowid)
     return NextResponse.json(integrante, { status: 201 })
