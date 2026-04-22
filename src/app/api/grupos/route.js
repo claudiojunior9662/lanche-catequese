@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 
 export async function GET() {
+  const db = getDb()
   const grupos = db.prepare(`
     SELECT g.id, g.numero,
       json_group_array(
@@ -24,6 +25,7 @@ export async function GET() {
 }
 
 export async function POST() {
+  const db = getDb()
   const ultimo = db.prepare('SELECT MAX(numero) as max FROM Grupo').get()
   const proximoNumero = (ultimo.max ?? 0) + 1
 

@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3'
 import path from 'path'
+import fs from 'fs'
 
 const globalForDb = global;
 
@@ -7,6 +8,13 @@ function createDb() {
   const dbPath = process.env.DB_PATH
     ? path.resolve(process.env.DB_PATH)
     : path.resolve(process.cwd(), 'dev.db')
+
+  // Garante que o diretório existe antes de abrir o banco
+  const dir = path.dirname(dbPath)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+
   const db = new Database(dbPath)
 
   db.pragma('foreign_keys = ON')
@@ -43,6 +51,9 @@ function createDb() {
   return db
 }
 
-export const db = globalForDb.db ?? createDb()
-
-if (process.env.NODE_ENV !== 'production') globalForDb.db = db
+export function getDb() {
+  if (!globalForDb._db) {
+    globalForDb._db = createDb()
+  }
+  return globalForDb._db
+}

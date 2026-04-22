@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 
 export async function POST(request, context) {
   const { id } = await context.params
   const { nome, telefone, alimento, categoria = 'salgado' } = await request.json()
 
   try {
+    const db = getDb()
     const grupo = db.prepare('SELECT * FROM Grupo WHERE id = ?').get(id)
     if (!grupo) return NextResponse.json({ error: 'Grupo não encontrado' }, { status: 404 })
 

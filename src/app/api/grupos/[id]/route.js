@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 
 export async function DELETE(request, context) {
   const { id } = await context.params
+  const db = getDb()
 
   try {
     const grupo = db.prepare('SELECT * FROM Grupo WHERE id = ?').get(id)

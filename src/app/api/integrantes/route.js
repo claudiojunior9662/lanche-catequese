@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { getDb } from '@/lib/db';
 
 // GET: Lista todos os grupos e seus integrantes
 export async function GET() {
+  const db = getDb()
   const grupos = db.prepare(`
     SELECT g.id, g.dataQuarta,
       json_group_array(
@@ -26,6 +27,7 @@ export async function GET() {
 
 // POST: Cria grupo (se não existir) e adiciona integrante
 export async function POST(request) {
+  const db = getDb()
   const { nome, telefone, alimento, dataQuarta } = await request.json();
 
   try {

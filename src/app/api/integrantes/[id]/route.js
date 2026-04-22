@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 
 export async function DELETE(request, context) {
   const { id } = await context.params
 
   try {
+    const db = getDb()
     const integrante = db.prepare('SELECT * FROM Integrante WHERE id = ?').get(id)
     if (!integrante) return NextResponse.json({ error: 'Integrante não encontrado' }, { status: 404 })
 
