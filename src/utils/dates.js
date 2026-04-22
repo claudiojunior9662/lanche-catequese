@@ -1,7 +1,8 @@
 export function getProximaQuarta() {
   const hoje = new Date();
   const diaDaSemana = hoje.getDay();
-  const diasAteQuarta = (3 - diaDaSemana + 7) % 7 || 7;
+  // Se hoje é quarta (0), mantém hoje. Caso contrário, avança até a próxima quarta.
+  const diasAteQuarta = (3 - diaDaSemana + 7) % 7;
   const proximaQuarta = new Date(hoje);
   proximaQuarta.setDate(hoje.getDate() + diasAteQuarta);
   proximaQuarta.setHours(0, 0, 0, 0);
