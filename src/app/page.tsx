@@ -131,7 +131,7 @@ export default function Home() {
   const salvarEdicao = async (id: number) => {
     if (loadingSalvarEdicao) return;
     if (!editForm.nome || !editForm.telefone || !editForm.alimento || !editForm.categoria || !editForm.tipo) {
-      alert('Todos os campos são obrigatórios.');
+      alert('Todos os campos são obrigatórios!');
       return;
     }
     setLoadingSalvarEdicao(true);
