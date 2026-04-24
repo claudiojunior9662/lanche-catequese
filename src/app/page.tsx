@@ -34,7 +34,7 @@ export default function Home() {
   const [loadingAdicionarIntegrante, setLoadingAdicionarIntegrante] = useState<number | null>(null);
   const [loadingRemoverIntegrante, setLoadingRemoverIntegrante] = useState<number | null>(null);
   const [editandoId, setEditandoId] = useState<number | null>(null);
-  const [editForm, setEditFormState] = useState<FormState>({ nome: '', telefone: '', alimento: '', categoria: 'salgado', tipo: 'Catequisando' });
+  const [editForm, setEditFormState] = useState<FormState>({ nome: '', telefone: '', alimento: '', categoria: '', tipo: '' });
   const [loadingSalvarEdicao, setLoadingSalvarEdicao] = useState(false);
   const proximaQuarta = getProximaQuarta();
   const grupoAtualNumero = getNumeroGrupoAtual(grupos.length);
@@ -48,7 +48,7 @@ export default function Home() {
   useEffect(() => { fetchGrupos(); }, []);
 
   const getForm = (grupoId: number): FormState =>
-    forms[grupoId] ?? { nome: '', telefone: '', alimento: '', categoria: 'salgado', tipo: 'Catequisando' };
+    forms[grupoId] ?? { nome: '', telefone: '', alimento: '', categoria: '', tipo: '' };
 
   const CATEGORIAS = [
     { key: 'bebida', label: 'Bebidas', badge: 'bg-sky-100 text-sky-900', dot: 'bg-sky-600' },
@@ -97,14 +97,17 @@ export default function Home() {
   const adicionarIntegrante = async (grupoId: number) => {
     if (loadingAdicionarIntegrante !== null) return;
     const form = getForm(grupoId);
-    if (!form.nome || !form.telefone || !form.alimento) return;
+    if (!form.nome || !form.telefone || !form.alimento || !form.categoria || !form.tipo) {
+      alert('Todos os campos são obrigatórios.');
+      return;
+    }
     setLoadingAdicionarIntegrante(grupoId);
     await fetch(`/api/grupos/${grupoId}/integrantes`, {
       method: 'POST',
       body: JSON.stringify(form),
       headers: { 'Content-Type': 'application/json' },
     });
-    setForms(prev => ({ ...prev, [grupoId]: { nome: '', telefone: '', alimento: '', categoria: 'salgado', tipo: 'Catequisando' } }));
+    setForms(prev => ({ ...prev, [grupoId]: { nome: '', telefone: '', alimento: '', categoria: '', tipo: '' } }));
     await fetchGrupos();
     setLoadingAdicionarIntegrante(null);
   };
@@ -127,6 +130,10 @@ export default function Home() {
 
   const salvarEdicao = async (id: number) => {
     if (loadingSalvarEdicao) return;
+    if (!editForm.nome || !editForm.telefone || !editForm.alimento || !editForm.categoria || !editForm.tipo) {
+      alert('Todos os campos são obrigatórios!');
+      return;
+    }
     setLoadingSalvarEdicao(true);
     await fetch(`/api/integrantes/${id}`, {
       method: 'PATCH',
@@ -222,6 +229,7 @@ export default function Home() {
                                       value={editForm.categoria}
                                       onChange={e => setEditFormState(f => ({ ...f, categoria: e.target.value }))}
                                     >
+                                      <option value="">- Categoria -</option>
                                       <option value="bebida">Bebida</option>
                                       <option value="salgado">Salgado</option>
                                       <option value="doce">Doce</option>
@@ -231,6 +239,7 @@ export default function Home() {
                                       value={editForm.tipo}
                                       onChange={e => setEditFormState(f => ({ ...f, tipo: e.target.value }))}
                                     >
+                                      <option value="">- Tipo -</option>
                                       <option value="Catequisando">Catequisando</option>
                                       <option value="Ouvinte">Ouvinte</option>
                                     </select>
@@ -321,6 +330,7 @@ export default function Home() {
                     value={form.categoria}
                     onChange={e => setForm(grupo.id, { categoria: e.target.value })}
                   >
+                    <option value="">- Categoria -</option>
                     <option value="bebida">Bebida</option>
                     <option value="salgado">Salgado</option>
                     <option value="doce">Doce</option>
@@ -330,6 +340,7 @@ export default function Home() {
                     value={form.tipo}
                     onChange={e => setForm(grupo.id, { tipo: e.target.value })}
                   >
+                    <option value="">- Tipo -</option>
                     <option value="Catequisando">Catequisando</option>
                     <option value="Ouvinte">Ouvinte</option>
                   </select>
